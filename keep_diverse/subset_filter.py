@@ -5,12 +5,13 @@ from .process_pool_utils import safe_thread_pool_executor
 def calculate_distance(
     i: int, j: int, x_cached_len: int, y_cached_len: int, x_text: str, y_text: str
 ) -> tuple[tuple[int, int], float]:
-    from .compress_lzma import fast_distance, compress_lzma
+    from .compress_lzma import fast_distance, honest_distance, compress_lzma
 
-    distance = fast_distance(
+    distance = honest_distance(
         x_len=x_cached_len,
         y_len=y_cached_len,
         xy_len=compress_lzma(bytes(x_text + y_text, "utf-8")),
+        yx_len=compress_lzma(bytes(y_text + x_text, "utf-8")),
     )
     return ((i, j), distance)
 

@@ -6,3 +6,7 @@ def compress_lzma(btext: bytes) -> int:
 
 def fast_distance(x_len: int, y_len: int, xy_len: int) -> float:
     return (xy_len - min(x_len, y_len)) / max(x_len, y_len)
+
+
+def honest_distance(x_len: int, y_len: int, xy_len: int, yx_len: int) -> float:
+    return (min(xy_len, yx_len) - min(x_len, y_len)) / max(x_len, y_len)
