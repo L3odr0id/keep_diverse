@@ -5,7 +5,8 @@ from .process_pool_utils import safe_thread_pool_executor
 def calculate_distance(
     i: int, j: int, x_cached_len: int, y_cached_len: int, x_text: str, y_text: str
 ) -> tuple[tuple[int, int], float]:
-    from .compress_lzma import fast_distance, compress_lzma
+    from .compress_lzma import compress_lzma
+    from .distance import fast_distance
 
     distance = fast_distance(
         x_len=x_cached_len,
@@ -16,13 +17,10 @@ def calculate_distance(
 
 
 def calc_all_distances(
-    subset_file_paths: list[tuple[int, str]],
+    files: list[tuple[int, str]],
     subset_compressed_caches: list[int],
     max_workers: int = 10,
 ) -> dict[tuple[int, int], float]:
-    from .read_files import read_files
-
-    files: list[tuple[int, str]] = read_files(subset_file_paths)
     files_len = len(files)
 
     dist_dict = {}
@@ -55,11 +53,12 @@ def subset_filter(
     min_indices_count: int,
     subset_compressed_caches: list[int],
 ):
+    from .read_files import read_files
     from .fast_pct_filter import FastPctFilter
     from .logger import get_logger
 
     dist_dict = calc_all_distances(
-        subset_file_paths=subset_file_paths,
+        files=read_files(subset_file_paths),
         subset_compressed_caches=subset_compressed_caches,
     )
 

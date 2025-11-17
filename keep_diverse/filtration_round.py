@@ -1,3 +1,18 @@
+def split_list_by(elements: list, split_by: int) -> list:
+    smaller_sets = []
+    for i in range(0, len(elements), split_by):
+        subset = elements[i : i + split_by]
+        smaller_sets.append(subset)
+
+    return smaller_sets
+
+
+def select_subset_compressed_caches(
+    files_set: list[tuple[int, str]], compressed_file_lens_cached
+):
+    return [compressed_file_lens_cached[file_tuple[0]] for file_tuple in files_set]
+
+
 def filtration_round(
     file_paths: list[str],
     split_by: int,
@@ -19,10 +34,7 @@ def filtration_round(
     indexed_paths = list[tuple[int, str]](enumerate(file_paths))
     random.shuffle(indexed_paths)
 
-    smaller_sets: list[list[tuple[int, str]]] = []
-    for i in range(0, len(indexed_paths), split_by):
-        subset = indexed_paths[i : i + split_by]
-        smaller_sets.append(subset)
+    smaller_sets: list[list[tuple[int, str]]] = split_list_by(indexed_paths, split_by)
 
     all_files_to_remove = []
     with safe_thread_pool_executor(max_workers=max_workers) as executor:
@@ -30,9 +42,9 @@ def filtration_round(
         for i in range(len(smaller_sets)):
             files_set = smaller_sets[i]
             files_set = sort_tuple(files_set)
-            subset_compressed_caches = [
-                compressed_file_lens_cached[file_tuple[0]] for file_tuple in files_set
-            ]
+            subset_compressed_caches = select_subset_compressed_caches(
+                files_set, compressed_file_lens_cached
+            )
 
             futures.append(
                 executor.submit(

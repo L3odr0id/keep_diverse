@@ -11,7 +11,7 @@ class CounterReport:
             json.dump(dict(counter), f, indent=2)
 
 
-class NoCounterReport:
+class NoCounterReport(CounterReport):
     def __init__(self):
         pass
 

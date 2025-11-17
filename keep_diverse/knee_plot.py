@@ -68,7 +68,7 @@ class KneePlot:
         save_plot_safely(fig, self.output_file)
 
 
-class NoOutputKneePlot:
+class NoOutputKneePlot(KneePlot):
     def __init__(self):
         pass
 
