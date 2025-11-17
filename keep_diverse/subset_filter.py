@@ -7,12 +7,19 @@ def calculate_distance(
 ) -> tuple[tuple[int, int], float]:
     from .compress_lzma import fast_distance, honest_distance, compress_lzma
 
-    distance = honest_distance(
+    # from textdistance import LZMANCD
+
+    distance = fast_distance(
         x_len=x_cached_len,
         y_len=y_cached_len,
         xy_len=compress_lzma(bytes(x_text + y_text, "utf-8")),
-        yx_len=compress_lzma(bytes(y_text + x_text, "utf-8")),
     )
+    # LZMANCD().distance(x_text, y_text)  # honest_distance(
+    #     x_len=x_cached_len,
+    #     y_len=y_cached_len,
+    #     xy_len=compress_lzma(bytes(x_text + y_text, "utf-8")),
+    #     yx_len=compress_lzma(bytes(y_text + x_text, "utf-8")),
+    # )
     return ((i, j), distance)
 
 

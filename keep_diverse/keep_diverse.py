@@ -28,20 +28,22 @@ def keep_diverse(
 
     keep_diverse_logger = get_logger()
 
+    keep_diverse_logger.info("Started filtering")
+
     compressed_lens = compressed_file_lens_list(file_paths)
     comp_lens_np_arr = np.array(compressed_lens, dtype=np.int64)
 
     file_path = os.path.join(tempfile.gettempdir(), "compressed_file_lens_cached.npy")
     np.save(file_path, comp_lens_np_arr)
 
-    keep_diverse_logger.info("Saved all lens to file")
+    keep_diverse_logger.info("Saved all compressed lens")
 
     removes_counter = Counter()
     for fp in file_paths:
         removes_counter[fp] = 0
 
     finished_rounds = 0
-    with safe_process_pool_executor(max_workers=max_workers) as executor:
+    with safe_process_pool_executor(max_workers=1) as executor:
         futures = [
             executor.submit(
                 filtration_round,
