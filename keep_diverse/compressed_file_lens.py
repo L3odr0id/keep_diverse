@@ -1,9 +1,3 @@
-from concurrent.futures import as_completed
-import os
-
-from .process_pool_utils import safe_thread_pool_executor
-
-
 def compressed_file_len(file_path: str, initial_idx: int) -> tuple[int, int]:
     from .compress_lzma import compress_lzma
 
@@ -11,9 +5,18 @@ def compressed_file_len(file_path: str, initial_idx: int) -> tuple[int, int]:
         return (initial_idx, compress_lzma(f.read()))
 
 
+def os_cpu_count_threads() -> int:
+    import os
+
+    return min(os.cpu_count() - 1, 1)
+
+
 def compressed_file_lens_list(
-    file_paths: list[str], max_workers: int = min(os.cpu_count() - 1, 1)
+    file_paths: list[str], max_workers: int = os_cpu_count_threads()
 ):
+    from concurrent.futures import as_completed
+    from .process_pool_utils import safe_thread_pool_executor
+
     results = {}
     with safe_thread_pool_executor(max_workers=max_workers) as executor:
         futures = [

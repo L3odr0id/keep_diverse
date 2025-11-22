@@ -1,5 +1,4 @@
 from concurrent.futures import as_completed
-from unittest import result
 from .process_pool_utils import safe_thread_pool_executor
 
 

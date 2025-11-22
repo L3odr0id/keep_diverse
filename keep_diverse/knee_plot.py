@@ -40,7 +40,7 @@ def knee_plot(ax1, knee: Knee):
         label=f"Knee point: {knee.value} ({pct:.1f}%)",
     )
 
-    ax1.set_xlabel("Files")
+    ax1.set_xlabel("File")
     ax1.set_ylabel("Times to remove")
     ax1.set_title("Knee Detection Plot")
     ax1.legend()
@@ -55,6 +55,7 @@ def sems_plot(ax2, sems_list: list[float]):
     ax2.set_xlabel("Round")
     ax2.set_ylabel("SEM of knee point")
     ax2.grid(True, alpha=0.3)
+    ax2.xaxis.set_major_locator(MaxNLocator(integer=True))
 
 
 class Plot:
@@ -71,7 +72,7 @@ class Plot:
 
         ax2.text(
             0.5,
-            -0.3,
+            -0.15,
             f"{round_number}" + self.display_knee_args.to_string(),
             transform=ax2.transAxes,
             ha="center",

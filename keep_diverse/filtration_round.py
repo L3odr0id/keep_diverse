@@ -31,7 +31,7 @@ def filtration_round(
 
     compressed_file_lens_cached = np.load(compressed_lens_file_path)
 
-    indexed_paths = list[tuple[int, str]](enumerate(file_paths))
+    indexed_paths = list(enumerate(file_paths))
     random.shuffle(indexed_paths)
 
     smaller_sets: list[list[tuple[int, str]]] = split_list_by(indexed_paths, split_by)

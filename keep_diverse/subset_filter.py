@@ -1,7 +1,3 @@
-from concurrent.futures import as_completed
-from .process_pool_utils import safe_thread_pool_executor
-
-
 def calculate_distance(
     i: int, j: int, x_cached_len: int, y_cached_len: int, x_text: str, y_text: str
 ) -> tuple[tuple[int, int], float]:
@@ -21,6 +17,9 @@ def calc_all_distances(
     subset_compressed_caches: list[int],
     max_workers: int = 10,
 ) -> dict[tuple[int, int], float]:
+    from concurrent.futures import as_completed
+    from .process_pool_utils import safe_thread_pool_executor
+
     files_len = len(files)
 
     dist_dict = {}

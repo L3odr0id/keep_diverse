@@ -1,4 +1,3 @@
-import signal
 from concurrent.futures import ProcessPoolExecutor
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import contextmanager
@@ -9,9 +8,7 @@ from .logger import get_logger
 
 @contextmanager
 def _safe_pool_executor(executor_class: Type, max_workers: int):
-    # original_sigint_handler = signal.signal(signal.SIGINT, signal.SIG_IGN)
     executor = executor_class(max_workers=max_workers)
-    # signal.signal(signal.SIGINT, original_sigint_handler)
 
     try:
         yield executor

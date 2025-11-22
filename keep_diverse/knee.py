@@ -1,4 +1,3 @@
-from typing import List
 from collections import Counter
 
 from kneed import KneeLocator
@@ -22,5 +21,5 @@ class Knee:
         )
         self.value = int(kneedle.knee)
 
-    def good_files(self) -> List[str]:
+    def good_files(self) -> list[str]:
         return self.file_names[self.value :]

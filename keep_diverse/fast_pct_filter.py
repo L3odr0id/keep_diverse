@@ -153,13 +153,13 @@ class FastPctFilter:
         new_remaining_indices, new_value = self.search_for_removal_percentage(
             self.current_idxs, self.current_metric_value
         )
-        successfuly_shrinked = len(new_remaining_indices) < len(self.current_idxs)
+        successfully_shrunk = len(new_remaining_indices) < len(self.current_idxs)
 
         self.logger.info(
-            f"Iter {self.iteration}. Successfully shrinked: {successfuly_shrinked}. New len: {len(new_remaining_indices)}. Old value: {self.current_metric_value} New value: {new_value}. Old count: {len(self.current_idxs)} New count: {len(new_remaining_indices)}."
+            f"Iter {self.iteration}. Successfully shrinked: {successfully_shrunk}. New len: {len(new_remaining_indices)}. Old value: {self.current_metric_value} New value: {new_value}. Old count: {len(self.current_idxs)} New count: {len(new_remaining_indices)}."
         )
 
-        if successfuly_shrinked:
+        if successfully_shrunk:
             self.current_idxs = new_remaining_indices
             self.current_metric_value = new_value
         else:

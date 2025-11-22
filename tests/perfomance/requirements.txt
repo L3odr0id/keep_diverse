@@ -1,1 +1,2 @@
 snakeviz
+textdistance==4.6.3

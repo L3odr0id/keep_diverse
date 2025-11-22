@@ -1,8 +1,18 @@
-from scipy.stats import sem
+import numpy as np
+import os
+import tempfile
+from collections import Counter
+from concurrent.futures import as_completed
+from scipy.stats import sem, tstd
 
 from .knee_plot import Plot
 from .filtered_files_list import FilteredFilesList
 from .counter_report import CounterReport
+from .knee import Knee
+from .process_pool_utils import safe_process_pool_executor
+from .compressed_file_lens import compressed_file_lens_list
+from .filtration_round import filtration_round
+from .logger import get_logger
 
 
 def keep_diverse(
@@ -17,17 +27,6 @@ def keep_diverse(
     counter_report: CounterReport,
     processes_count: int = 10,
 ):
-    import numpy as np
-    import os
-    import tempfile
-    from collections import Counter
-    from concurrent.futures import as_completed
-    from .knee import Knee
-    from .process_pool_utils import safe_process_pool_executor
-    from .compressed_file_lens import compressed_file_lens_list
-    from .filtration_round import filtration_round
-    from .logger import get_logger
-
     keep_diverse_logger = get_logger()
 
     compressed_lens = compressed_file_lens_list(file_paths)
@@ -70,7 +69,9 @@ def keep_diverse(
             knee = Knee(removes_counter)
             knees_list.append(knee.value)
 
-            sem_value = sem(knees_list)
+            sem_value = (
+                tstd(knees_list) / (comp_lens_np_arr.size) / (comp_lens_np_arr.size - 1)
+            )
             sems_list.append(sem_value)
 
             knee_plot.draw(knee, sems_list, finished_rounds)
