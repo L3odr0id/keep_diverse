@@ -6,7 +6,7 @@ import logging
 import cProfile
 
 from .file_paths import file_paths
-from keep_diverse.knee_plot import KneePlot, DisplayKneeArgs, NoOutputKneePlot
+from keep_diverse.knee_plot import Plot, DisplayKneeArgs, NoOutputKneePlot
 from keep_diverse.filtered_files_list import FilteredFilesList
 from keep_diverse.logger import configure_logger
 from keep_diverse.keep_diverse import keep_diverse
@@ -18,7 +18,7 @@ def overall():
         level=logging.INFO,
     )
 
-    files = file_paths()
+    files = file_paths(250)
 
     temp_dir = os.getcwd()  # tempfile.TemporaryDirectory()
     output_plot_path = os.path.join(temp_dir, "knee_plot.svg")
@@ -29,9 +29,9 @@ def overall():
     relative_eps = 0.00001
     max_tries = 10
     min_indices_count = 10
-    filter_rounds = 10
+    filter_rounds = 100
 
-    knee_plot = KneePlot(
+    knee_plot = Plot(
         output_file=output_plot_path,
         display_knee_args=DisplayKneeArgs(
             total_files_count=len(files),

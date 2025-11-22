@@ -4,7 +4,7 @@ import os
 
 from keep_diverse.filter_args import add_filter_args
 from keep_diverse.path_args import add_path_arguments
-from keep_diverse.knee_plot import KneePlot, NoOutputKneePlot, DisplayKneeArgs
+from keep_diverse.knee_plot import Plot, NoOutputKneePlot, DisplayKneeArgs
 from keep_diverse.filtered_files_list import FilteredFilesList
 from keep_diverse.logger import configure_logger
 from keep_diverse.keep_diverse import keep_diverse
@@ -34,7 +34,7 @@ def main() -> None:
     knee_plot = (
         NoOutputKneePlot()
         if args.output_plot_path is None
-        else KneePlot(
+        else Plot(
             output_file=args.output_plot_path,
             display_knee_args=DisplayKneeArgs(
                 total_files_count=len(file_paths),
@@ -69,6 +69,7 @@ def main() -> None:
         knee_plot=knee_plot,
         filtered_files_list=filtered_files_list,
         counter_report=counter_report,
+        processes_count=args.processes_count,
     )
 
 

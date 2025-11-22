@@ -2,10 +2,10 @@ import os
 from pathlib import Path
 
 
-def file_paths():
+def file_paths(limit: int = 100):
     test_dir = Path(__file__).parent.parent / "data"
 
-    file_paths = sorted([str(test_dir / name) for name in os.listdir(test_dir)])[:100]
+    file_paths = sorted([str(test_dir / name) for name in os.listdir(test_dir)])[:limit]
 
     return file_paths
 

@@ -1,4 +1,3 @@
-from typing import List, Tuple
 import random
 
 import numpy as np
@@ -7,10 +6,22 @@ from .poisson_metric import poisson_metric_value
 from .logger import get_logger
 
 
+def distances_without_idxs(
+    old_distances: dict[tuple[int, int], float], idxs_to_remove: list[int]
+) -> dict[tuple[int, int], float]:
+    new_distances = {}
+
+    for idx1, idx2 in old_distances.keys():
+        if idx1 not in idxs_to_remove and idx2 not in idxs_to_remove:
+            new_distances[(idx1, idx2)] = old_distances[(idx1, idx2)]
+
+    return new_distances
+
+
 class FastPctFilter:
     def __init__(
         self,
-        initial_indices: List[int],
+        initial_indices: list[int],
         relative_eps: float,
         max_tries: int,
         min_indices_count: int,
@@ -30,18 +41,17 @@ class FastPctFilter:
 
     def remove_idxs_attempt(
         self,
-        current_idxs: List[int],
+        current_idxs: list[int],
         removal_pct: float,
         current_value: float,
         num_to_remove: int,
         attempt: int,
-    ) -> Tuple[List[int], float] | None:
+    ) -> tuple[list[int], float] | None:
         indices_to_remove = random.sample(current_idxs, num_to_remove)
 
-        new_distances = {}
-        for idx1, idx2 in self.text_set_distances.keys():
-            if idx1 not in indices_to_remove or idx2 not in indices_to_remove:
-                new_distances[(idx1, idx2)] = self.text_set_distances[(idx1, idx2)]
+        new_distances = distances_without_idxs(
+            self.text_set_distances, indices_to_remove
+        )
 
         new_value = poisson_metric_value(new_distances)
 
@@ -62,10 +72,10 @@ class FastPctFilter:
 
     def try_to_remove_idxs(
         self,
-        current_idxs: List[int],
+        current_idxs: list[int],
         removal_pct: float,
         current_value: float,
-    ) -> Tuple[List[int], float, bool]:
+    ) -> tuple[list[int], float, bool]:
         texts_count = len(current_idxs)
         num_to_remove = int(texts_count * removal_pct)
 
@@ -90,9 +100,9 @@ class FastPctFilter:
 
     def search_for_removal_percentage(
         self,
-        initial_indices: List[int],
+        initial_indices: list[int],
         initial_metric_value: float,
-    ) -> Tuple[List[int], float]:
+    ) -> tuple[list[int], float]:
         self.logger.debug(f"Start searching for removal percentage.")
         left = 0
         right = 100

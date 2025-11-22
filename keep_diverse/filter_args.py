@@ -27,3 +27,8 @@ def add_filter_args(parser: argparse.ArgumentParser) -> None:
         type=int,
         default=100,
     )
+    parser.add_argument(
+        "--processes-count",
+        type=int,
+        default=10,
+    )

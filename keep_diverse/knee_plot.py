@@ -1,4 +1,3 @@
-from typing import List
 from dataclasses import dataclass
 
 import matplotlib.pyplot as plt
@@ -21,45 +20,60 @@ class DisplayKneeArgs:
         return f"/{self.filter_rounds} rounds. Total files count: {self.total_files_count}. Split by: {self.split_by}. Relative eps: {self.relative_eps}. Max tries: {self.max_tries}. Min indices count: {self.min_indices_count}."
 
 
-class KneePlot:
+def knee_plot(ax1, knee: Knee):
+    ax1.clear()
+    ax1.plot(
+        knee.x_values,
+        knee.y_values,
+        "b-",
+        linewidth=2,
+        label="File's removal frequency",
+    )
+
+    pct = knee.value / len(knee.y_values) * 100
+
+    ax1.axvline(
+        x=knee.value,
+        color="red",
+        linestyle="--",
+        linewidth=2,
+        label=f"Knee point: {knee.value} ({pct:.1f}%)",
+    )
+
+    ax1.set_xlabel("Files")
+    ax1.set_ylabel("Times to remove")
+    ax1.set_title("Knee Detection Plot")
+    ax1.legend()
+    ax1.grid(True, alpha=0.3)
+    ax1.yaxis.set_major_locator(MaxNLocator(integer=True))
+
+
+def sems_plot(ax2, sems_list: list[float]):
+    ax2.clear()
+    rounds = list(range(len(sems_list)))
+    ax2.plot(rounds, sems_list, "g-", linewidth=2)
+    ax2.set_xlabel("Round")
+    ax2.set_ylabel("SEM of knee point")
+    ax2.grid(True, alpha=0.3)
+
+
+class Plot:
     def __init__(self, output_file: str, display_knee_args: DisplayKneeArgs):
         self.output_file = output_file
         self.display_knee_args = display_knee_args
 
-    def draw(self, knee: Knee, round_number: int):
-        fig, ax = plt.subplots(1, 1, figsize=(10, 6))
-        plt.subplots_adjust(bottom=0.2)
-        ax.clear()
-        ax.plot(
-            knee.x_values,
-            knee.y_values,
-            "b-",
-            linewidth=2,
-            label="File's removal frequency",
-        )
+    def draw(self, knee: Knee, sems_list: list[float], round_number: int):
+        fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(8, 10))
+        plt.subplots_adjust(bottom=0.1)
 
-        pct = knee.value / len(knee.y_values) * 100
+        knee_plot(ax1, knee)
+        sems_plot(ax2, sems_list)
 
-        ax.axvline(
-            x=knee.value,
-            color="red",
-            linestyle="--",
-            linewidth=2,
-            label=f"Knee point: {knee.value} ({pct:.1f}%)",
-        )
-
-        ax.set_xlabel("Files")
-        ax.set_ylabel("Times to remove")
-        ax.set_title("Knee Detection Plot")
-        ax.legend()
-        ax.grid(True, alpha=0.3)
-        ax.yaxis.set_major_locator(MaxNLocator(integer=True))
-
-        ax.text(
+        ax2.text(
             0.5,
-            -0.15,
+            -0.3,
             f"{round_number}" + self.display_knee_args.to_string(),
-            transform=ax.transAxes,
+            transform=ax2.transAxes,
             ha="center",
             fontsize=8,
             style="italic",
@@ -68,9 +82,9 @@ class KneePlot:
         save_plot_safely(fig, self.output_file)
 
 
-class NoOutputKneePlot(KneePlot):
+class NoOutputKneePlot(Plot):
     def __init__(self):
         pass
 
-    def draw(self, knee: Knee, round_number: int):
+    def draw(self, knee: Knee, sems_list: list[float], round_number: int):
         pass

@@ -1,4 +1,6 @@
-from .knee_plot import KneePlot
+from scipy.stats import sem
+
+from .knee_plot import Plot
 from .filtered_files_list import FilteredFilesList
 from .counter_report import CounterReport
 
@@ -10,10 +12,10 @@ def keep_diverse(
     relative_eps: float,
     max_tries: int,
     min_indices_count: int,
-    knee_plot: KneePlot,
+    knee_plot: Plot,
     filtered_files_list: FilteredFilesList,
     counter_report: CounterReport,
-    max_workers: int = 10,
+    processes_count: int = 10,
 ):
     import numpy as np
     import os
@@ -40,8 +42,11 @@ def keep_diverse(
     for fp in file_paths:
         removes_counter[fp] = 0
 
+    knees_list = []
+    sems_list = []
+
     finished_rounds = 0
-    with safe_process_pool_executor(max_workers=max_workers) as executor:
+    with safe_process_pool_executor(max_workers=processes_count) as executor:
         futures = [
             executor.submit(
                 filtration_round,
@@ -61,11 +66,18 @@ def keep_diverse(
             removes_counter.update(files_to_remove)
 
             finished_rounds += 1
+
+            knee = Knee(removes_counter)
+            knees_list.append(knee.value)
+
+            sem_value = sem(knees_list)
+            sems_list.append(sem_value)
+
+            knee_plot.draw(knee, sems_list, finished_rounds)
+
+            filtered_files_list.save(knee)
+            counter_report.save(removes_counter)
+
             keep_diverse_logger.info(
                 f"Filter. Finished round {finished_rounds} / {filter_rounds}"
             )
-
-            knee = Knee(removes_counter)
-            knee_plot.draw(knee, finished_rounds)
-            filtered_files_list.save(knee)
-            counter_report.save(removes_counter)
