@@ -69,9 +69,7 @@ def keep_diverse(
             knee = Knee(removes_counter)
             knees_list.append(knee.value)
 
-            sem_value = (
-                tstd(knees_list) / (comp_lens_np_arr.size) / (comp_lens_np_arr.size - 1)
-            )
+            sem_value = sem(knees_list)
             sems_list.append(sem_value)
 
             knee_plot.draw(knee, sems_list, finished_rounds)
